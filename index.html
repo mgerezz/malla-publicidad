@@ -116,6 +116,16 @@
       return subject.prereq.every(id => approved.includes(id));
     }
 
+    function toggleApproval(id) {
+      if (approved.includes(id)) {
+        approved = approved.filter(i => i !== id);
+      } else {
+        approved.push(id);
+      }
+      saveProgress();
+      render();
+    }
+
     function render() {
       const container = document.getElementById('malla');
       container.innerHTML = '';
@@ -145,12 +155,8 @@
             div.setAttribute("data-tooltip", "");
           }
 
-          if (unlocked && !isApproved) {
-            div.addEventListener("click", () => {
-              approved.push(subject.id);
-              saveProgress();
-              render();
-            });
+          if (unlocked || isApproved) {
+            div.addEventListener("click", () => toggleApproval(subject.id));
           }
 
           col.appendChild(div);
