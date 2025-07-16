@@ -120,6 +120,9 @@
       if (approved.includes(id)) {
         approved = approved.filter(i => i !== id);
       } else {
+        // Solo aprobar si todos los requisitos están cumplidos
+        const subject = subjects.find(s => s.id === id);
+        if (!isUnlocked(subject)) return;
         approved.push(id);
       }
       saveProgress();
@@ -139,11 +142,12 @@
           div.textContent = subject.name;
           div.classList.add("subject");
 
-          const unlocked = isUnlocked(subject);
           const isApproved = approved.includes(subject.id);
+          const unlocked = isUnlocked(subject);
 
           if (isApproved) {
             div.classList.add("approved");
+            div.setAttribute("data-tooltip", "Aprobada - clic para desmarcar");
           } else if (!unlocked) {
             div.classList.add("locked");
             div.setAttribute("data-tooltip", "Requiere: " + subject.prereq.map(id => {
@@ -152,12 +156,10 @@
             }).join(", "));
           } else {
             div.classList.add("unlocked");
-            div.setAttribute("data-tooltip", "");
+            div.setAttribute("data-tooltip", "Clic para marcar como aprobada");
           }
 
-          if (unlocked || isApproved) {
-            div.addEventListener("click", () => toggleApproval(subject.id));
-          }
+          div.addEventListener("click", () => toggleApproval(subject.id));
 
           col.appendChild(div);
         });
